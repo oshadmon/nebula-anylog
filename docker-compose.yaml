@@ -3,6 +3,7 @@ services:
   nebula:
     image: oshadmon/nebula
     container_name: nebula
+    restart: unless-stopped
     stdin_open: true
     tty: true
     network_mode: host
@@ -15,3 +16,9 @@ services:
       - nebula_configs.env
     volumes:
       - /var/bin/nebula/configs:/app/nebula/configs
+    healthcheck:
+      test: [ "CMD-SHELL", "pgrep nebula && ip link show nebula1 | grep 'state UP'" ]
+      interval: 30s
+      timeout: 10s
+      retries: 3
+      start_period: 10s
