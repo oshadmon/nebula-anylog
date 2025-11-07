@@ -74,25 +74,22 @@ def main():
     Generate configuration file for nebula based on user input
     positional arguments:
       cidr                  CIDR address
-      tcp_port              AnyLog TCP port
-      rest_port             AnyLog REST port
     optional arguments:
       -h, --help                                show this help message and exit
-      --broker-port         BROKER_PORT         AnyLog Broker port
+      --port                 PORTS              (optional) specific list of ports to be open via Nebula
       --is-lighthouse       [IS_LIGHTHOUSE]     whether node is of type Lighthouse
       --lighthouse-node-ip  LIGHTHOUSE_NODE_IP  Lighthouse Node IP address
       --remote-cli          [REMOTE_CLI]        Open port 31800 for Remote-CLI
       --grafana             [GRAFANA]           Open port 3000 for Grafana
+    :sample-calls:
+        python3 config_nebula.py 10.10.1.1/24 --ports 32348-32349,31800,3000
+        python3 config_nebula.py 10.10.1.1/24 --ports 32048-32049,32348-32349
     """
     parser = argparse.ArgumentParser()
     parser.add_argument('cidr', type=str, default='10.10.1.1/24', help='CIDR address')
-    parser.add_argument('tcp_port', type=int, default=32048, help='AnyLog TCP port')
-    parser.add_argument('rest_port', type=int, default=32049, help='AnyLog REST port')
-    parser.add_argument('--broker-port', type=int, default=None, help='AnyLog Broker port')
+    parser.add_argument('--ports', type=str, default=None, help='(optional) specific list of ports to be open via Nebula')
     parser.add_argument("--is-lighthouse", type=bool, nargs='?', default=False, const=True, help='whether node is of type Lighthouse')
     parser.add_argument('--lighthouse-node-ip', type=str, default=None, help='Lighthouse Node IP address')
-    parser.add_argument('--remote-cli', type=bool, default=False, nargs='?', const=True, help='Open port 31800 for Remote-CLI')
-    parser.add_argument('--grafana', type=bool, default=False, nargs='?', const=True, help='Open port 3000 for Grafana')
     args = parser.parse_args()
 
     lighthouse_ip = args.cidr.split("/")[0]
@@ -129,36 +126,22 @@ def main():
         'proto': 'udp',
         'host': 'any'
     })
-    for port in [args.tcp_port, args.rest_port]:
+    if not args.ports:
         configs['firewall']['inbound'].append({
-            'port': port,
+            'port': 'any',
             'proto': 'tcp',
             'host': 'any'
         })
+    else:
+        for port in args.ports.split(","):
+            port = port.strip()
+            if port:
+                configs['firewall']['inbound'].append({
+                    'port': port,
+                    'proto': 'tcp',
+                    'host': 'any'
+                })
 
-    # broker port
-    if args.broker_port and args.broker_port != "":
-        configs['firewall']['inbound'].append({
-            'port': args.broker_port,
-            'proto': 'tcp',
-            'host': 'any'
-        })
-
-    # remote-cli
-    if args.remote_cli is True:
-        configs['firewall']['inbound'].append({
-            'port': 31800,
-            'proto': 'tcp',
-            'host': 'any'
-        })
-
-    # Grafana
-    if args.grafana is True:
-        configs['firewall']['inbound'].append({
-            'port': 3000,
-            'proto': 'tcp',
-            'host': 'any'
-        })
 
     __write_configs(configs=configs)
     __disable_overlay()
