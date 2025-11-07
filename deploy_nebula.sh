@@ -85,4 +85,22 @@ elif [ ! -e "$ANYLOG_PATH/nebula/configs/host.crt" ] || [ ! -e "$ANYLOG_PATH/neb
   done
 fi
 
+# create config file
+CMD="python3 $ANYLOG_PATH/nebula/config_nebula.py ${CIDR_OVERLAY_ADDRESS}"
+if [[ ${PORTS} ]] ; then CMD+=" --ports ${PORTS}" ; fi
+if [[ "${IS_LIGHTHOUSE}" == "true" ]] ; then
+  CMD+=" --is-lighthouse"
+elif [[ -n "${LIGHTHOUSE_NODE_IP}" ]] ; then
+  CMD+=" --lighthouse-node-ip ${LIGHTHOUSE_NODE_IP}"
+else
+  echo "Missing lighthouse configuration information"
+fi
+
+eval $CMD
+if [[ ! -e "${ANYLOG_PATH}/nebula/node.yml" ]] ; then
+  echo "Failed to locate nebula config file"
+ fi
+
+./nebula -config $ANYLOG_PATH/nebula/node.yml > $ANYLOG_PATH/nebula/nebula.log 2>&1 &
+
 /bin/bash

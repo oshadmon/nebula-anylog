@@ -95,10 +95,11 @@ def main():
     lighthouse_ip = args.cidr.split("/")[0]
     configs = __read_configs()
 
+    node_type = "host" if not args.is_lighthouse else "lighthouse"
     configs['pki'] = {
         "ca": os.path.join(ROOT_DIR, 'ca.crt'),
-        'cert': os.path.join(ROOT_DIR,  'host.crt'),
-        'key': os.path.join(ROOT_DIR, 'host.key')
+        'cert': os.path.join(ROOT_DIR,  f'{node_type}.crt'),
+        'key': os.path.join(ROOT_DIR, f'{node_type}.key')
     }
     for section in range(len(configs['firewall']['inbound'])):
         if 'local_cidr' in configs['firewall']['inbound'][section]:
