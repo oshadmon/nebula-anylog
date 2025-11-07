@@ -4,7 +4,7 @@ FROM python:3.11-slim AS base
 ENV ANYLOG_PATH=/app \
     DEBIAN_FRONTEND=noninteractive \
     PROFILER=false
-#    IS_LIGHTHOUSE=false \
+#    IS_LIGHTHOUSE=true
 #    CIDR_OVERLAY_ADDRESS="10.10.1.1/24" \
 #    LIGHTHOUSE_IP=10.10.1.1 \
 #    LIGHTHOUSE_NODE_IP=172.233.108.122 \
@@ -39,6 +39,4 @@ FROM base AS deployment
 
 # Run deployment script by default
 WORKDIR /app/nebula
-#CMD ["bash", "/app/nebula/deploy_nebula.sh"]
-WORKDIR /app/
-ENTRYPOINT ["/bin/sh"]
+ENTRYPOINT ["/app/nebula/deploy_nebula.sh"]

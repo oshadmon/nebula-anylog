@@ -84,3 +84,5 @@ elif [ ! -e "$ANYLOG_PATH/nebula/configs/host.crt" ] || [ ! -e "$ANYLOG_PATH/neb
     fi
   done
 fi
+
+/bin/bash
