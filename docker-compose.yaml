@@ -11,11 +11,7 @@ services:
       - SYS_MODULE
     devices:
       - /dev/net/tun:/dev/net/tun
-    environment:
-      - IS_LIGHTHOUSE=true
-      - CIDR_OVERLAY_ADDRESS=10.10.1.1/24
-      - LIGHTHOUSE_IP=10.10.1.1
-      - LIGHTHOUSE_NODE_IP=10.0.0.169
-      - OVERLAY_IP=10.10.1.1
+    env_file:
+      - nebula_configs.env
     volumes:
       - /var/bin/nebula/configs:/app/nebula/configs
