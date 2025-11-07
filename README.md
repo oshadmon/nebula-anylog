@@ -28,6 +28,12 @@ have its own private key, which is used to validate the identity of that host wh
 private key. CA certificate is distributed to, and trusted by, every host on the network. The CA private key should not be 
 distributed, and can be kept offline when not being used to add hosts to a Nebula network.
 
+<html>
+    <body>
+        <img src="img.png" height="10%" width="10%" align="center" />
+    </body>
+</html>
+
 ## Deploying an Overlay 
 
 ### Preparing Machines
@@ -178,7 +184,7 @@ OVERLAY_IP=10.10.1.2
 
 4. Start Nebula 
 ```shell
-docker compose -f docker-compose.yml up -
+docker compose -f docker-compose.yml up -d
 ```
 
 5. To test simply do `ifconfig` 
@@ -192,4 +198,12 @@ nebula1: flags=4305<UP,POINTOPOINT,RUNNING,NOARP,MULTICAST>  mtu 1300
         RX errors 0  dropped 0  overruns 0  frame 0
         TX packets 21  bytes 1008 (1.0 KB)
         TX errors 0  dropped 0 overruns 0  carrier 0  collisions 0
+```
+
+## Troubleshooting 
+
+* **Linux**:  Enable [TUN/TAP driver](https://docs.kernel.org/networking/tuntap.html) to provide packet reception and  
+transmission for user space programs. 
+```shell
+sudo modprobe tun
 ```
